@@ -1,0 +1,317 @@
+{% load static %}
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image logo">
+        <title>EXTINCTEURS | Details</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/linericon/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/owl-carousel/owl.carousel.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/lightbox/simpleLightbox.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/nice-select/css/nice-select.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/animate-css/animate.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/flaticon/flaticon.css' %}">
+        <!-- main css -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    </head>
+    <body>
+        
+        <!--================Header Menu Area =================-->
+        <header class="header_area">
+            <div class="main_menu">
+            	<nav class="navbar navbar-expand-lg navbar-light" style="background-color: black;">
+					<div class="container box_1620">
+						<!-- Brand and toggle get grouped for better mobile display -->
+						<a class="navbar-brand logo_h" href="index.html"><img src="{% static 'img/crtv.png' %}" width="50px" height="50px" alt=""></a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+							<ul class="nav navbar-nav menu_nav justify-content-center">
+								<li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li> 
+								<li class="nav-item"><a class="nav-link" href="{% url 'support' %}">Support</a></li> 
+								<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a>
+								
+							</ul>
+							<ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item">
+                                    <a href="{% url 'logout' %}" class="tickets_btn">Logout</a>
+                                </li>
+                            </ul>
+						</div> 
+					</div>
+            	</nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+        
+        <!--================Home Banner Area =================-->
+        <section class="banner_area">
+            <div class="banner_inner d-flex align-items-center" style="background-color: #2b2e38;">
+            	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
+				<div class="container">
+					<div class="banner_content text-center" >
+						<h2>About Us</h2>
+						<div class="page_link">
+							<a href="index.html">Home</a>
+							<a href="about-us.html">About</a>
+						</div>
+					</div>
+				</div>
+            </div>
+        </section>
+        <!--================End Home Banner Area =================-->
+		{% if messages %}
+			<div class="alert alert-danger">
+				{% for message in messages %}
+					{{ message }}
+				{% endfor %}
+			</div>
+		{% endif %}
+        <!--================Made Life Area =================-->
+        <section class="made_life_area p_120">
+			<div class="container">
+				<div class="made_life_inner">
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">{{ extincteur.code }}</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="infos-tab" data-toggle="tab" href="#infos" role="tab" aria-controls="infos" aria-selected="false">Informations</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="inspecter-tab" data-toggle="modal" data-target="#inspectionModal" role="tab" aria-controls="inspecter" aria-selected="false">Inspecter</a>						
+						</li>
+					</ul>
+					<br/>
+					
+			<div class="container">
+                <div class="made_life_inner">
+                    <div class="row made_life_text">
+                        <div class="col-lg-6">
+                            <div class="left_side_text">
+                                <h3>Extincteur : {{ extincteur.code }}</h3>
+                                <h6>Type : {{ extincteur.get_type_extincteur_display }}</h6>
+                                <p>Classe : {{ extincteur.get_classe_display }}</p>
+                                <p>Date d'achat : {{ extincteur.date_achat }}</p>
+                                <p>Localisation : {{ extincteur.localisation }}</p>
+								<!-- Bouton pour générer le QR code -->
+								<a class="main_btn" href="{% url 'generate_qrcode' extincteur.code %}" target="_blank">Générer son QR code</a>
+															
+								<!-- Espace pour afficher le QR code -->
+								<img id="qrcode_img" src="" alt="QR Code" style="display:none; margin-top:20px;">
+
+								<!-- Bouton pour télécharger le QR code (initialement masqué) -->
+								<a id="download_qrcode" href="" download style="display:none;" class="main_btn" style="background-color: #2b2e38;">Télécharger </a>
+								</div>
+							
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart_img">
+                                <img class="img-fluid" src="{% static 'img/e3.png' %}" width="300px" height="350px" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Bouton pour ouvrir la fenêtre modale -->
+
+		
+		<!-- Fenêtre modale -->
+		<div class="modal fade" id="inspectionModal" tabindex="-1" role="dialog" aria-labelledby="inspectionModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="inspectionModalLabel">Inspection Extincteur {{ extincteur.code }}</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				</div>
+				<form id="inspectionForm" method="POST" action="{% url 'inspecter_extincteur' extincteur.code %}">
+				{% csrf_token %}
+				<div class="modal-body">
+
+					<div class="form-group">
+                        <label for="id_type_inspection">Type d'inspection</label>
+                        <select class="form-control" id="id_type_inspection" name="type_inspection" value="{{ form.type_inspection.value }}">
+                            <option value="manuelle">Manuelle</option>
+                            <option value="trimestrielle">Trimestrielle</option>
+                            <option value="semestrielle">Semestrielle</option>
+                            <option value="annuelle">Annuelle</option>
+                        </select>
+                    </div>
+
+					<!-- Lieu -->
+					<div class="form-group">
+					<label for="id_lieu">Lieu</label>
+					<input type="text" class="form-control" id="id_lieu" name="lieu" value="{{ form.lieu.value }}">
+					</div>
+		
+					<!-- Questions d'inspection -->
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_fiche_controle_verifiee">Fiche contrôle vérifiée ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="fiche_controle_verifiee_vrai" name="fiche_controle_verifiee" value="vrai" {% if form.fiche_controle_verifiee.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="fiche_controle_verifiee_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_emplacement_correct">Emplacement correct ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="emplacement_correct_vrai" name="emplacement_correct" value="vrai" {% if form.emplacement_correct.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="emplacement_correct_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_visible_accessible">Visible et accessible ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="visible_accessible_vrai" name="visible_accessible" value="vrai" {% if form.visible_accessible.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="visible_accessible_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_plaque_lisible">Plaque lisible ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="plaque_lisible_vrai" name="plaque_lisible" value="vrai" {% if form.plaque_lisible.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="plaque_lisible_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_signes_deterioration">Signes de détérioration ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="signes_deterioration_vrai" name="signes_deterioration" value="vrai" {% if form.signes_deterioration.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="signes_deterioration_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_pression_normale">Pression normale ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="pression_normale_vrai" name="pression_normale" value="vrai" {% if form.pression_normale.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="pression_normale_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_mode_emploi_affiche">Mode d'emploi affiché ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="mode_emploi_affiche_vrai" name="mode_emploi_affiche" value="vrai" {% if form.mode_emploi_affiche.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="mode_emploi_affiche_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_dommage_expose">Exposé à un dommage ?</label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="dommage_expose_vrai" name="dommage_expose" value="vrai" {% if form.dommage_expose.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="dommage_expose_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<!-- Commentaires -->
+					<div class="form-group">
+					<label for="id_commentaires">Observations : </label>
+					<textarea class="form-control" id="id_commentaires" name="observation" value="{{ form.observation.value }}" rows="3">{{ form.observation.value }}</textarea>
+					</div>
+				</div>
+		
+				<!-- Footer du modal -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+					<button type="submit" class="btn btn-primary">Sauvegarder l'inspection</button>
+				</div>
+				</form>
+			</div>
+			</div>
+		</div>
+		
+
+
+		<!-- Bootstrap and jQuery dependencies -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		
+
+        <footer class="footer_area p_120">
+        	<div class="container">
+        		<div class="row footer_inner">
+        			<div class="col-lg-5 col-sm-6">
+        				<aside class="f_widget ab_widget">
+        					<p> Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved by <a href="https://colorlib.com" target="_blank">Anne Piedjou</a> </p>
+							<a href="index.html"><img src="{%  static 'img/crtv.png' %}" width="80px" height="80px" alt=""></a>
+        				</aside>
+        			</div>
+        		</div>
+        	</div>
+        </footer>
+        <!--================End Footer Area =================-->
+        
+        
+        <script>
+			document.querySelector('.main_btn').addEventListener('click', function(e) {
+				e.preventDefault();
+				const qrCodeUrl = this.href;
+				
+				fetch(qrCodeUrl)
+					.then(response => response.blob())
+					.then(blob => {
+						const url = URL.createObjectURL(blob);
+						const img = document.getElementById('qrcode_img');
+						img.src = url;
+						img.style.display = 'block';
+			
+						// Activer le bouton de téléchargement
+						const downloadLink = document.getElementById('download_qrcode');
+						downloadLink.href = url;
+						downloadLink.style.display = 'inline-block';
+					})
+					.catch(error => console.error('Erreur lors de la génération du QR code :', error));
+			});
+		</script>
+			
+        
+		<!-- jQuery -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+		<!-- Bootstrap CSS -->
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Bootstrap JS -->
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/stellar.js' %}"></script>
+        <script src="{% static 'vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/imagesloaded.pkgd.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/isotope-min.js' %}"></script>
+        <script src="{% static 'vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.waypoints.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.counterup.min.js' %}"></script>
+        <script src="{% static 'js/mail-script.js' %}"></script>
+        <script src="{% static 'js/gmaps.min.js' %}"></script>
+        <script src="{% static 'js/theme.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,324 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image logo">
+        <title>EXTINCTEURS | Support</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/linericon/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/owl-carousel/owl.carousel.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/lightbox/simpleLightbox.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/nice-select/css/nice-select.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/animate-css/animate.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/flaticon/flaticon.css' %}">
+        <!-- main css -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
+    </head>
+    <body>
+        
+        <header class="header_area">
+            <div class="main_menu">
+            	<nav class="navbar navbar-expand-lg navbar-light" style="background-color: black;">
+					<div class="container box_1620">
+						<!-- Brand and toggle get grouped for better mobile display -->
+						<a class="navbar-brand logo_h" href="index.html"><img src="{% static 'img/crtv.png' %}" width="50px" height="50px" alt=""></a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+							<ul class="nav navbar-nav menu_nav justify-content-center">
+								<li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li> 
+								<li class="nav-item"><a class="nav-link" href="{% url 'support' %}">Support</a></li> 
+								<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a>
+								
+							</ul>
+							<ul class="nav navbar-nav navbar-right">
+								<li class="nav-item"><a href="#" class="tickets_btn">Logout</a></li>
+							</ul>
+						</div> 
+					</div>
+            	</nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+        
+        <section class="made_life_area p_120">
+            <div class="container">
+                <h2 class="mb-4">Liste des utilisateurs</h2>
+                <button class="btn btn-primary float-right mb-3" data-toggle="modal" data-target="#addUserModal">+ AJOUTER</button>
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Matricule</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th>Poste</th>
+                            <th>Type d'utilisateur</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for utilisateur in utilisateurs %}
+                        <tr>
+                            <td>{{ utilisateur.matricule }}</td>
+                            <td>{{ utilisateur.nom }}</td>
+                            <td>{{ utilisateur.prenom }}</td>
+                            <td>{{ utilisateur.tel }}</td>
+                            <td>{{ utilisateur.email }}</td>
+                            <td>{{ utilisateur.poste }}</td>
+                            <td>{{ utilisateur.get_type_utilisateur_display }}</td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#editUserModal-{{ utilisateur.id }}">✏️</button>
+                                <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteUserModal-{{ utilisateur.id }}">🗑️</button>
+                            </td>
+                        </tr>
+        
+                        <!-- Edit User Modal -->
+                        <div class="modal fade" id="editUserModal-{{ utilisateur.id }}" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editUserModalLabel">Modifier Utilisateur</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form method="POST" action="{% url 'edit_utilisateur' utilisateur.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="matricule">Matricule</label>
+                                                <input type="text" class="form-control" id="matricule" name="matricule" value="{{ utilisateur.matricule }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nom">Nom</label>
+                                                <input type="text" class="form-control" id="nom" name="nom" value="{{ utilisateur.nom }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="prenom">Prénom</label>
+                                                <input type="text" class="form-control" id="prenom" name="prenom" value="{{ utilisateur.prenom }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="tel">Téléphone</label>
+                                                <input type="text" class="form-control" id="tel" name="tel" value="{{ utilisateur.tel }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input type="email" class="form-control" id="email" name="email" value="{{ utilisateur.email }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="poste">Poste</label>
+                                                <input type="text" class="form-control" id="poste" name="poste" value="{{ utilisateur.poste }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="type_utilisateur">Type d'utilisateur</label>
+                                                <select class="form-control" id="type_utilisateur" name="type_utilisateur">
+                                                    <option value="personnel" {% if utilisateur.type_utilisateur == 'personnel' %}selected{% endif %}>Personnel</option>
+                                                    <option value="expert" {% if utilisateur.type_utilisateur == 'expert' %}selected{% endif %}>Expert</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="password">Mot de passe</label>
+                                                <input type="password" class="form-control" id="password" name="password">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="password_confirm">Confirmer le mot de passe</label>
+                                                <input type="password" class="form-control" id="password_confirm" name="password_confirm">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Delete User Modal -->
+                        <div class="modal fade" id="deleteUserModal-{{ utilisateur.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteUserModalLabel">Supprimer Utilisateur</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Voulez-vous vraiment supprimer cet utilisateur ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+                                        <form method="POST" action="{% url 'delete_utilisateur' utilisateur.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Oui</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pagination d-flex justify-content-between align-items-center">
+                    <span>Affichage de 1 à 10 sur 10 entrées</span>
+                    <div class="pagination-controls">
+                        <button class="btn btn-primary">Précédent</button>
+                        <button class="btn btn-primary">1</button>
+                        <button class="btn btn-primary">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Add User Modal -->
+        <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addUserModalLabel">Ajouter Utilisateur</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="{% url 'add_utilisateur' %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="matricule">Matricule</label>
+                                <input type="text" class="form-control" id="matricule" name="matricule" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nom">Nom</label>
+                                <input type="text" class="form-control" id="nom" name="nom" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prenom">Prénom</label>
+                                <input type="text" class="form-control" id="prenom" name="prenom" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tel">Téléphone</label>
+                                <input type="text" class="form-control" id="tel" name="tel" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="poste">Poste</label>
+                                <input type="text" class="form-control" id="poste" name="poste" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="type_utilisateur">Type d'utilisateur</label>
+                                <select class="form-control" id="type_utilisateur" name="type_utilisateur">
+                                    <option value="personnel">Personnel</option>
+                                    <option value="expert">Expert</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Mot de passe</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password_confirm">Confirmer le mot de passe</label>
+                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <!--================Footer Area =================-->
+        <footer class="footer_area p_120">
+        	<div class="container">
+        		<div class="row footer_inner">
+        			<div class="col-lg-5 col-sm-6">
+        				<aside class="f_widget ab_widget">
+        					<p> Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved by <a href="https://colorlib.com" target="_blank">Anne Piedjou</a> </p>
+							<a href="index.html"><img src="{%  static 'img/crtv.png' %}" width="80px" height="80px" alt=""></a>
+        				</aside>
+        			</div>
+        		</div>
+        	</div>
+        </footer>
+        <!--================End Footer Area =================-->
+        
+        <!--================Contact Success and Error message Area =================-->
+        <div id="success" class="modal modal-message fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fa fa-close"></i>
+                        </button>
+                        <h2>Thank you</h2>
+                        <p>Your message is successfully sent...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals error -->
+
+        <div id="error" class="modal modal-message fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fa fa-close"></i>
+                        </button>
+                        <h2>Sorry !</h2>
+                        <p> Something went wrong </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--================End Contact Success and Error message Area =================-->
+        
+        
+        
+        
+<!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/stellar.js' %}"></script>
+        <script src="{% static 'vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/imagesloaded.pkgd.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/isotope-min.js' %}"></script>
+        <script src="{% static 'vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.waypoints.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.counterup.min.js' %}"></script>
+        <script src="{% static 'js/mail-script.js' %}"></script>
+        <!--gmaps Js-->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+        <script src="{% static 'js/gmaps.min.js' %}"></script>
+        <script src="{% static 'js/theme.js' %}"></script>
+
+    </body>
+</html>

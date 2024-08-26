@@ -1,0 +1,186 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #0f1015;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .signup-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .signup-box {
+            background-color: #191d26;
+            padding: 80px;
+            border-radius: 8px;
+            width: 550px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            font-size: 44px;
+            color: #ff0000;
+        }
+        
+        .logo-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff0000;
+            margin-left: 8px;
+        }
+        
+        h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .messages {
+            color: red;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .messages ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: #2b2e38;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 24px;
+        }
+        
+        .input-group input::placeholder,
+        .input-group select::placeholder {
+            color: #888a93;
+        }
+        
+        .signup-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff0000;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .signup-button:hover {
+            background-color: #e60000;
+        }
+        
+        .signin-link {
+            margin-top: 15px;
+            font-size: 20px;
+            color: #888a93;
+        }
+        
+        .signin-link a {
+            color: #ff0000;
+            text-decoration: none;
+        }
+        
+        .signin-link a:hover {
+            text-decoration: underline;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-box">
+            <div class="logo-section">
+                <div class="logo-icon">&#128100;</div>
+                <div class="logo-text">SignUp</div>
+            </div>
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="matricule" placeholder="Matricule" value="{{ matricule }}" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="nom" placeholder="Nom" value="{{ nom }}" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="prenom" placeholder="Prénom" value="{{ prenom }}" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" name="email" placeholder="Adresse email" value="{{ email }}" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" name="tel" placeholder="Téléphone" value="{{ tel }}" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="poste" placeholder="Poste" value="{{ poste }}" required>
+                </div>
+                <div class="input-group">
+                    <select name="type_utilisateur" required>
+                        <option value="" disabled selected>Sélectionnez le type</option>
+                        <option value="personnel">Personnel</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="Mot de passe" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+                </div>
+                <button type="submit" class="signup-button">Sign Up</button>
+            </form>
+            <div class="signin-link">
+                Already have an Account? <a href="{% url 'login' %}">Login</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

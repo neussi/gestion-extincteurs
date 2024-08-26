@@ -3,3 +3,7 @@ backports.zoneinfo==0.2.1
 Django==4.2.15
 sqlparse==0.5.1
 typing-extensions==4.12.2
+python-decouple==3.8
+psycopg2==2.9.9
+reportlab
+qrcode[pil]

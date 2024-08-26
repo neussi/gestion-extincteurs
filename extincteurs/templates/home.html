@@ -1,0 +1,137 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image logo">
+        <title>EXTINCTEURS</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <!-- main css -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    </head>
+    <body>
+        
+        <!--================Header Menu Area =================-->
+        <header class="header_area">
+            <div class="main_menu">
+                <nav class="navbar navbar-expand-lg navbar-light" style="background-color: black;">
+                    <div class="container box_1620">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <a class="navbar-brand logo_h" href="index.html"><img src="{% static 'img/crtv.png' %}" width="50px" height="50px" alt=""></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                            <ul class="nav navbar-nav menu_nav justify-content-center">
+                                <li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'support' %}">Support</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item">
+                                    <a href="{% url 'logout' %}" class="tickets_btn">Logout</a>
+                                </li>
+                            </ul>
+                        </div> 
+                    </div>
+                </nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+        
+        <!--================Home Banner Area =================-->
+        <section class="home_banner_area" style="background-color: #2b2e38;">
+            <div class="banner_inner" style="background-color: #2b2e38;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div class="banner_content">
+                                <h2>Bienvenue, {{ request.user.utilisateur.nom }}!<br>Votre Solution Orientée</h2>
+                                <p>Nous sommes ravis de vous accueillir. Découvrez comment notre solution peut transformer la gestion des extincteurs, fournir des analyses détaillées et optimiser la gestion des utilisateurs. Commencez dès aujourd'hui et améliorez votre expérience.</p>
+                                <a class="banner_btn" href="#">Commencer</a>
+                                <a class="banner_btn2" href="#">Télécharger</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-7" style="background-color: #2b2e38;">
+                            <div class="home_left_img">
+                                <img class="img-fluid" src="{% static 'img/e2.png' %}" alt="Image de bienvenue">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--================End Home Banner Area =================-->
+        
+        <!--================Work Area =================-->
+        <section class="work_area p_120">
+            <div class="container">
+                <div class="main_title">
+                    <h2>Comment Cela Fonctionne Pour Vous</h2>
+                    <p>Découvrez comment notre solution simplifie la gestion des extincteurs, fournit des analyses approfondies et facilite l'administration des utilisateurs.</p>
+                </div>                
+                <div class="work_inner row">
+                    <div class="col-lg-4">
+                        <div class="work_item">
+                            <i class="fas fa-fire-extinguisher">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
+									<path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0m1.602-2.027c.04-.534.198-.815.846-1.26.674-.475 1.05-1.09 1.05-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745.336 0 .504-.24.554-.627"/>
+								</svg>
+							</i>
+                            <a href="{% url 'types_extincteurs' %}"><h4>Gestion des Extincteurs</h4></a>
+                            <p>Gérez efficacement tous vos extincteurs avec une interface intuitive pour suivre leur état, les dates de maintenance, et plus encore.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="work_item">
+                            <i class="lnr lnr-chart-bars">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reception-4" viewBox="0 0 16 16"><path d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z"/></svg>
+							</i>
+                            <a href="{% url 'types_extincteurs' %}"><h4>Statistiques</h4></a>
+                            <p>Accédez à des rapports détaillés et des graphiques sur les données de votre système pour une meilleure prise de décision.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="work_item">
+							<i class="bi bi-people-fill">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>
+							</i>                            
+							<a href="{% url 'types_extincteurs' %}"><h4>Gestion des Utilisateurs</h4></a>
+                            <p>Administrez les utilisateurs avec des fonctionnalités pour ajouter, modifier et supprimer des comptes, tout en gérant leurs rôles et permissions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--================End Work Area =================-->
+       
+        <!--================Footer Area =================-->
+        <footer class="footer_area p_120">
+            <div class="container">
+                <div class="row footer_inner">
+                    <div class="col-lg-5 col-sm-6">
+                        <aside class="f_widget ab_widget">
+                            <p>Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved by <a href="https://colorlib.com" target="_blank">Anne Piedjou</a></p>
+                            <a href="index.html"><img src="{% static 'img/crtv.png' %}" width="80px" height="80px" alt=""></a>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!--================End Footer Area =================-->
+        
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,197 @@
+{% load static %}
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image logo">
+        <title>EXTINCTEURS </title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/linericon/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/owl-carousel/owl.carousel.min.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/lightbox/simpleLightbox.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/nice-select/css/nice-select.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/animate-css/animate.css' %}">
+        <link rel="stylesheet" href="{% static 'vendors/flaticon/flaticon.css' %}">
+        <!-- main css -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    </head>
+    <body>
+        
+        <!--================Header Menu Area =================-->
+        <header class="header_area">
+            <div class="main_menu">
+            	<nav class="navbar navbar-expand-lg navbar-light" style="background-color: black;">
+					<div class="container box_1620">
+						<!-- Brand and toggle get grouped for better mobile display -->
+						<a class="navbar-brand logo_h" href="index.html"><img src="{% static 'img/crtv.png' %}" width="50px" height="50px" alt=""></a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+							<ul class="nav navbar-nav menu_nav justify-content-center">
+								<li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li> 
+								<li class="nav-item"><a class="nav-link" href="{% url 'support' %}">Support</a></li> 
+								<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a>
+								
+							</ul>
+							<ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item">
+                                    <a href="{% url 'logout' %}" class="tickets_btn">Logout</a>
+                                </li>
+                            </ul>
+						</div> 
+					</div>
+            	</nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+        
+        <!--================Home Banner Area =================-->
+        <section class="banner_area">
+            <div class="banner_inner d-flex align-items-center" style="background-color: #2b2e38;">
+            	<div class="overlay bg-parallax" data-stellar-ratio="0.9" data-stellar-vertical-offset="0" data-background=""></div>
+				<div class="container">
+					<div class="banner_content text-center">
+						<h2>Type d'Extincteurs</h2>
+						<div class="page_link">
+							<a href="{% url 'home' %}">Home</a>
+							<a href="{% url 'types_extincteurs' %}">EXTINCTEURS</a>
+						</div>
+					</div>
+				</div>
+            </div>
+        </section>
+        <!--================End Home Banner Area =================-->
+        
+        <!--================Price Area =================-->
+        <section class="price_area p_120">
+			<div class="container">
+				<div class="main_title">
+					<h2>Choisissez Votre Type d'Extincteur</h2>
+					<p>Découvrez nos différents types d'extincteurs adaptés à vos besoins. Chaque type offre des caractéristiques spécifiques pour garantir une protection optimale.</p>
+				</div>
+				<div class="price_inner row">
+					<div class="col-lg-3">
+						<div class="price_item">
+							<div class="price_head" style="background-color: #2b2e38;">
+								<h4 style="color: white;">Eau</h4>
+							</div>
+							<div class="price_body">
+								<ul class="list">
+									<li><a href="#">Extinction des feux de classe A</a></li>
+									<li><a href="#">Capacité de 6 à 9 litres</a></li>
+									<li><a href="#">Écologique et économique</a></li>
+									<li><a href="#">Pression constante</a></li>
+								</ul>
+							</div>
+							<div class="price_footer" style="background-color: #2b2e38;">
+								<a class="main_btn" href="{% url 'extincteurs' type_extincteur='eau' %}">Consulter</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="price_item">
+							<div class="price_head" style="background-color: #2b2e38;">
+								<h4 style="color: white;">Mousse</h4>
+							</div>
+							<div class="price_body">
+								<ul class="list">
+									<li><a href="#">Extinction des feux de classe A et B</a></li>
+									<li><a href="#">Capacité de 6 à 9 litres</a></li>
+									<li><a href="#">Propriétés anti-écume</a></li>
+									<li><a href="#">Effet d'étouffement des flammes</a></li>
+								</ul>
+							</div>
+							<div class="price_footer" style="background-color: #2b2e38;">
+								<a class="main_btn" href="{% url 'extincteurs' type_extincteur='mousse' %}">Consulter</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="price_item">
+							<div class="price_head" style="background-color: #2b2e38;">
+								<h4 style="color: white;">Poudre</h4>
+							</div>
+							<div class="price_body">
+								<ul class="list">
+									<li><a href="#">Extinction des feux de classe A, B, et C</a></li>
+									<li><a href="#">Capacité de 6 à 12 kg</a></li>
+									<li><a href="#">Large gamme d'applications</a></li>
+									<li><a href="#">Réaction rapide et efficace</a></li>
+								</ul>
+							</div>
+							<div class="price_footer" style="background-color: #2b2e38;">
+								<a class="main_btn" href="{% url 'extincteurs' type_extincteur='poudre' %}">Consulter</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3">
+						<div class="price_item">
+							<div class="price_head" style="background-color: #2b2e38;">
+								<h4 style="color: white;">CO2</h4>
+							</div>
+							<div class="price_body">
+								<ul class="list">
+									<li><a href="#">Extinction des feux de classe B et C</a></li>
+									<li><a href="#">Capacité de 2 à 5 kg</a></li>
+									<li><a href="#">Non conducteur d'électricité</a></li>
+									<li><a href="#">Pas de résidu</a></li>
+								</ul>
+							</div>
+							<div class="price_footer" style="background-color: #2b2e38;">
+								<a class="main_btn" href="{% url 'extincteurs' type_extincteur='co2' %}">Consulter</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+        <!--================End Price Area =================-->
+        
+        <!--================Footer Area =================-->
+        <footer class="footer_area p_120">
+        	<div class="container">
+        		<div class="row footer_inner">
+        			<div class="col-lg-5 col-sm-6">
+        				<aside class="f_widget ab_widget">
+        					<p> Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved by <a href="https://colorlib.com" target="_blank">Anne Piedjou</a> </p>
+							<a href="index.html"><img src="{%  static 'img/crtv.png' %}" width="80px" height="80px" alt=""></a>
+        				</aside>
+        			</div>
+        		</div>
+        	</div>
+        </footer>
+        
+        
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/stellar.js' %}"></script>
+        <script src="{% static 'vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/imagesloaded.pkgd.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/isotope-min.js' %}"></script>
+        <script src="{% static 'vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.waypoints.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.counterup.min.js' %}"></script>
+        <script src="{% static 'js/mail-script.js' %}"></script>
+        <!--gmaps Js-->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+        <script src="{% static 'js/gmaps.min.js' %}"></script>
+        <script src="{% static 'js/theme.js' %}"></script>
+    </body>
+</html>
