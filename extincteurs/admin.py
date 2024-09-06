@@ -14,8 +14,8 @@ class InspectionAdmin(admin.ModelAdmin):
     search_fields = ('date', 'type_inspection', 'extincteur__code', 'inspecteur__username', 'prochaine_inspection')
 
 class MaintenanceAdmin(admin.ModelAdmin):
-    list_display = ('date', 'type_maintenance', 'extincteur', 'expert')
-    search_fields = ('date', 'type_maintenance', 'extincteur__code', 'expert__username')
+    list_display = ('date', 'extincteur', 'expert', 'prochaine_maintenance')
+    search_fields = ('date', 'extincteur__code','inspecteur__username', 'prochaine_maintenance')
 
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('date_notification', 'destinataire')

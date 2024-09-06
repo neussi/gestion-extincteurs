@@ -5,7 +5,7 @@ from datetime import date
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-
+import uuid
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
@@ -29,7 +29,6 @@ class Utilisateur(models.Model):
         return f'{self.nom} {self.prenom} ({self.poste} - {self.type_utilisateur})'
 
 
-import uuid
 
 def generate_extincteur_code():
     return f'E{uuid.uuid4().hex[:4]}'
@@ -106,14 +105,23 @@ class Inspection(models.Model):
         return f'Inspection {self.type_inspection} - {self.extincteur.code} - {self.date}'
 
 class Maintenance(models.Model):
-    date = models.DateField()
-    type_maintenance = models.CharField(max_length=50)
-    expert = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
-    extincteur = models.ForeignKey(Extincteur, on_delete=models.CASCADE)
-    commentaires = models.TextField(blank=True, null=True)
+    extincteur = models.ForeignKey('Extincteur', on_delete=models.CASCADE)
+    expert = models.ForeignKey('Utilisateur', on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    lieu = models.CharField(max_length=255)
+    fiche_controle_verifiee = models.BooleanField(default=False)
+    emplacement_correct = models.BooleanField(default=False)
+    visible_accessible = models.BooleanField(default=False)
+    plaque_lisible = models.BooleanField(default=False)
+    signes_deterioration = models.BooleanField(default=False)
+    pression_normale = models.BooleanField(default=False)
+    mode_emploi_affiche = models.BooleanField(default=False)
+    dommage_expose = models.BooleanField(default=False)
+    observation = models.TextField(blank=True, null=True)
+    prochaine_maintenance = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return f'Maintenance {self.type_maintenance} - {self.extincteur}'
+        return f'Inspection {self.inspecteur} - {self.extincteur.code} - {self.date}'
 
 
 class Notification(models.Model):

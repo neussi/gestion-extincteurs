@@ -17,6 +17,8 @@ urlpatterns = [
     path('contact/', contact, name='contact'),
     path('support/', support, name='support'),
     path('inspecter/<str:code>/', inspecter_extincteur, name='inspecter_extincteur'), 
+    path('maintenance/<str:code>/', maintenance_extincteur, name='maintenance_extincteur'), 
+
     
     
     

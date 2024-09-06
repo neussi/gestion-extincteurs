@@ -13,6 +13,26 @@
         <!-- main css -->
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+        <style>
+            h2 span {
+                position: relative;
+                z-index: 1;
+                padding: 0 5px;
+                display: inline-block;
+            }
+            
+            h2 span:before {
+                content: "";
+                position: absolute;
+                height: 50%;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: red;
+                z-index: -1;
+            }
+        </style>    
+
     </head>
     <body>
         
@@ -54,7 +74,7 @@
                     <div class="row">
                         <div class="col-lg-5">
                             <div class="banner_content">
-                                <h2>Bienvenue, {{ request.user.utilisateur.nom }}!<br>Votre Solution Orientée</h2>
+                                <h2>Bienvenue, <span> {{ request.user.utilisateur.prenom }}  {{ request.user.utilisateur.nom }} </span> <strong style="color: red;">!</strong> <br>Votre Solution Orientée</h2>
                                 <p>Nous sommes ravis de vous accueillir. Découvrez comment notre solution peut transformer la gestion des extincteurs, fournir des analyses détaillées et optimiser la gestion des utilisateurs. Commencez dès aujourd'hui et améliorez votre expérience.</p>
                                 <a class="banner_btn" href="#">Commencer</a>
                                 <a class="banner_btn2" href="#">Télécharger</a>
@@ -62,7 +82,7 @@
                         </div>
                         <div class="col-lg-7" style="background-color: #2b2e38;">
                             <div class="home_left_img">
-                                <img class="img-fluid" src="{% static 'img/e2.png' %}" alt="Image de bienvenue">
+                                <img class="img-fluid" src="{% static 'img/e2.png' %}" width="300px" height="300px" alt="Image de bienvenue">
                             </div>
                         </div>
                     </div>
@@ -71,14 +91,15 @@
         </section>
         <!--================End Home Banner Area =================-->
         
-        <!--================Work Area =================-->
-        <section class="work_area p_120">
+    
+        <section class="made_life_area p_120">
             <div class="container">
                 <div class="main_title">
                     <h2>Comment Cela Fonctionne Pour Vous</h2>
                     <p>Découvrez comment notre solution simplifie la gestion des extincteurs, fournit des analyses approfondies et facilite l'administration des utilisateurs.</p>
                 </div>                
                 <div class="work_inner row">
+                    <!-- Inspections (disponible pour expert et personnel) -->
                     <div class="col-lg-4">
                         <div class="work_item">
                             <i class="fas fa-fire-extinguisher">
@@ -89,6 +110,9 @@
                             <a href="{% url 'types_extincteurs' %}"><h4>Inspections</h4></a>
                         </div>
                     </div>
+        
+                    <!-- Statistiques (uniquement pour personnel) -->
+                    {% if utilisateur.type_utilisateur == 'personnel' %}
                     <div class="col-lg-4">
                         <div class="work_item">
                             <i class="lnr lnr-chart-bars">
@@ -97,34 +121,47 @@
                             <a href="{% url 'stats' %}"><h4>Statistiques</h4></a>
                         </div>
                     </div>
+                    {% endif %}
+        
+                    <!-- Utilisateurs (uniquement pour personnel) -->
+                    {% if utilisateur.type_utilisateur == 'personnel' %}
                     <div class="col-lg-4">
                         <div class="work_item">
-							<i class="bi bi-people-fill">
+                            <i class="bi bi-people-fill">
 								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>
-							</i>                            
-							<a href="{% url 'gestion_utilisateurs' %}"><h4>Utilisateurs</h4></a>
+							</i>                           
+                            <a href="{% url 'gestion_utilisateurs' %}"><h4>Utilisateurs</h4></a>
                         </div>
                     </div>
+                    {% endif %}
+        
+                    <!-- Extincteurs (disponible pour expert et personnel) -->
                     <div class="col-lg-4">
                         <div class="work_item">
-							<i class="bi bi-people-fill">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>
-							</i>                            
-							<a href="{% url 'gestion_extincteurs' %}"><h4>Extincteurs</h4></a>
+                            <i class="bi bi-people-fill">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                    <path d="..."></path>
+                                </svg>
+                            </i>                            
+                            <a href="{% url 'gestion_extincteurs' %}"><h4>Extincteurs</h4></a>
                         </div>
                     </div>
+        
+                    <!-- Rapports (disponible pour expert et personnel) -->
                     <div class="col-lg-4">
                         <div class="work_item">
-							<i class="bi bi-people-fill">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>
-							</i>                            
-							<a href="{% url 'gestion_rapports' %}"><h4>Rapports</h4></a>
+                            <i class="bi bi-people-fill">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                    <path d="..."></path>
+                                </svg>
+                            </i>                            
+                            <a href="{% url 'gestion_rapports' %}"><h4>Rapports</h4></a>
                         </div>
                     </div>
-                   
                 </div>
             </div>
         </section>
+        
         <!--================End Work Area =================-->
        
         <!--================Footer Area =================-->

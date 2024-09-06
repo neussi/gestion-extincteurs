@@ -90,9 +90,16 @@
 						<li class="nav-item">
 							<a class="nav-link" id="infos-tab" data-toggle="tab" href="#infos" role="tab" aria-controls="infos" aria-selected="false">Informations</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" id="inspecter-tab" data-toggle="modal" data-target="#inspectionModal" role="tab" aria-controls="inspecter" aria-selected="false">Inspecter</a>						
-						</li>
+
+						{% if utilisateur.type_utilisateur == 'expert' %}
+							<li class="nav-item">
+								<a class="nav-link" id="inspecter-expert-tab" data-toggle="modal" data-target="#MaintenanceModal" role="tab" aria-controls="inspecter" aria-selected="false">Inspecter</a>
+							</li>
+						{% else %}
+							<li class="nav-item">
+								<a class="nav-link" id="inspecter-non-expert-tab" data-toggle="modal" data-target="#inspectionModal" role="tab" aria-controls="inspecter" aria-selected="false">Inspecter</a>
+							</li>
+						{% endif %}
 					</ul>
 					<br/>
 					
@@ -242,6 +249,111 @@
 			</div>
 			</div>
 		</div>
+
+
+		<!-- Fenêtre modale -->
+		<div class="modal fade" id="MaintenanceModal" tabindex="-1" role="dialog" aria-labelledby="MaintenanceModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h5 class="modal-title" id="MaintenanceModalLabel">Maintenance Extincteur {{ extincteur.code }}</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				</div>
+				<form id="MaintenanceForm" method="POST" action="{% url 'maintenance_extincteur' extincteur.code %}">
+				{% csrf_token %}
+				<div class="modal-body">
+
+					<!-- Lieu -->
+					<div class="form-group">
+					<label for="id_lieu">Lieu</label>
+					<input type="text" class="form-control" id="id_lieu" name="lieu" placehohder="Lieu"  value="{{ form.lieu.value }}">
+					</div>
+		
+					<!-- Questions d'inspection -->
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_fiche_controle_verifiee">Fiche contrôle vérifiée ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="fiche_controle_verifiee_vrai" name="fiche_controle_verifiee" value="vrai" {% if form.fiche_controle_verifiee.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="fiche_controle_verifiee_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_emplacement_correct">Emplacement correct ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="emplacement_correct_vrai" name="emplacement_correct" value="vrai" {% if form.emplacement_correct.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="emplacement_correct_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_visible_accessible">Visible et accessible ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="visible_accessible_vrai" name="visible_accessible" value="vrai" {% if form.visible_accessible.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="visible_accessible_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_plaque_lisible">Plaque lisible ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="plaque_lisible_vrai" name="plaque_lisible" value="vrai" {% if form.plaque_lisible.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="plaque_lisible_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_signes_deterioration">Signes de détérioration ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="signes_deterioration_vrai" name="signes_deterioration" value="vrai" {% if form.signes_deterioration.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="signes_deterioration_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_pression_normale">Pression normale ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="pression_normale_vrai" name="pression_normale" value="vrai" {% if form.pression_normale.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="pression_normale_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_mode_emploi_affiche">Mode d'emploi affiché ? </label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="mode_emploi_affiche_vrai" name="mode_emploi_affiche" value="vrai" {% if form.mode_emploi_affiche.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="mode_emploi_affiche_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<div class="form-group row">
+					<label class="col-sm-6 col-form-label" for="id_dommage_expose">Exposé à un dommage ?</label>
+					<div class="col-sm-3">
+						<input type="radio" class="form-check-input" id="dommage_expose_vrai" name="dommage_expose" value="vrai" {% if form.dommage_expose.value == "vrai" %}checked{% endif %}>
+						<label class="form-check-label" for="dommage_expose_vrai">Vrai</label>
+					</div>
+					</div>
+		
+					<!-- Commentaires -->
+					<div class="form-group">
+					<label for="id_commentaires">Observations : </label>
+					<textarea class="form-control" id="id_commentaires" name="observation" value="{{ form.observation.value }}" rows="3">{{ form.observation.value }}</textarea>
+					</div>
+				</div>
+		
+				<!-- Footer du modal -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+					<button type="submit" class="btn btn-primary">Sauvegarder la maintenance </button>
+				</div>
+				</form>
+			</div>
+			</div>
+		</div>
+		
+
 		
 
 

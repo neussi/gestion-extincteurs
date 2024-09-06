@@ -1,56 +1,32 @@
-from .models import *
+from .models import Extincteur, RapportInspection, Inspection, Maintenance, Utilisateur
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import *
+from .forms import ExtincteurForm, SignUpForm, UtilisateurForm, CustomLoginForm, InspectionForm
+from .forms import MaintenanceForm
 from django.shortcuts import render, get_object_or_404, redirect
-import random, time
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.conf import settings
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.views.decorators.csrf import csrf_exempt
-import json
-import os
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Extincteur
-from .forms import ExtincteurForm
-import zipfile
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.utils.text import slugify
-from .models import RapportInspection, Inspection
-from datetime import datetime
-from .forms import SignUpForm
 from django.contrib.auth.models import User
-import qrcode
-from io import BytesIO
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Utilisateur
-from .forms import UtilisateurForm
-from django.shortcuts import render
 from django.db.models import Count
-from .models import Utilisateur, Extincteur, Inspection, Maintenance, RapportInspection
-from django.utils.timezone import now
-from datetime import timedelta
 from django.db.models.functions import ExtractMonth
+from django.utils.timezone import now
+from datetime import datetime, timedelta
+import random, time, json, os, zipfile
+from reportlab.lib.pagesizes import letter, inch
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image
+from io import BytesIO
+import qrcode
+from django.contrib.staticfiles import finders
 
-
-
-
-# USER VIEWS
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import AuthenticationForm
-from .models import Utilisateur
-from .forms import CustomLoginForm
 
 def custom_login_view(request):
     form = CustomLoginForm()
@@ -191,9 +167,13 @@ def extincteurs(request, type_extincteur):
 
 @login_required(login_url='/login')
 def details_extincteurs(request, code):
+    if request.user.is_authenticated:
+        user = request.user
+    utilisateur = Utilisateur.objects.get(user=user)
+    
     extincteur = get_object_or_404(Extincteur, code=code)
     qrcode_url = reverse('generate_qrcode', args=[extincteur.code])
-    return render(request, 'details_extincteurs.html', {'extincteur': extincteur, 'qrcode_url': qrcode_url})
+    return render(request, 'details_extincteurs.html', {'extincteur': extincteur, 'qrcode_url': qrcode_url, 'utilisateur': utilisateur})
 
 
 @login_required(login_url='/login')
@@ -240,25 +220,13 @@ def generate_qrcode(request, code):
     return HttpResponse(buffer, content_type="image/png")
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.conf import settings
-from reportlab.lib.pagesizes import letter, inch
-from reportlab.pdfgen import canvas
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image
-from io import BytesIO
-from datetime import datetime, timedelta
-from django.contrib.staticfiles import finders
-
-from .models import Extincteur, Inspection, RapportInspection
-from .forms import InspectionForm
 @login_required(login_url='/login')
+
 def inspecter_extincteur(request, code):
     extincteur = get_object_or_404(Extincteur, code=code)
-
+    if request.user.is_authenticated:
+        user = request.user
+    utilisateur = Utilisateur.objects.get(user=user)
     if request.method == 'POST':
         form = InspectionForm(request.POST)
         if form.is_valid():
@@ -307,6 +275,9 @@ def inspecter_extincteur(request, code):
             # Titre du document
             title = Paragraph(f"Rapport d'Inspection de l'Extincteur {extincteur.code}", title_style)
             story.append(title)
+            username = Paragraph(f"fait par {utilisateur.prenom } {utilisateur.nom } ", normal_style)
+            dates = Paragraph(f"le {inspection.date }", normal_style)
+
 
             # Informations de l'inspection
             content = [
@@ -334,6 +305,10 @@ def inspecter_extincteur(request, code):
                 ('FONT', (0, 1), (-1, -1), 'Helvetica'),
             ]))
             story.append(table)
+            
+            story.append(username)
+            
+            story.append(dates)
 
             # Génération du PDF
             doc.build(story)
@@ -351,7 +326,104 @@ def inspecter_extincteur(request, code):
     else:
         form = InspectionForm()
 
-    return render(request, 'details_extincteur.html', {'form': form, 'extincteur': extincteur})
+    return render(request, 'details_extincteurs.html', {'form': form, 'extincteur': extincteur, 'utilisateur': utilisateur})
+
+
+
+
+
+
+@login_required(login_url='/login')
+def maintenance_extincteur(request, code):
+    extincteur = get_object_or_404(Extincteur, code=code)
+    if request.user.is_authenticated:
+        user = request.user
+        utilisateur = Utilisateur.objects.get(user=user)
+        
+    if request.method == 'POST':
+        form = MaintenanceForm(request.POST)
+        if form.is_valid():
+            maintenance = form.save(commit=False)
+            maintenance.extincteur = extincteur
+            maintenance.inspecteur = get_object_or_404(Utilisateur, user=request.user)
+            maintenance.date = datetime.now()
+
+            # Calcul de la prochaine inspection
+
+            maintenance.prochaine_maintenance = maintenance.date + timedelta(days=365)
+
+            maintenance.save()
+
+            # Génération du fichier PDF
+            buffer = BytesIO()
+            doc = SimpleDocTemplate(buffer, pagesize=letter)
+            story = []
+
+            # En-tête avec le logo
+            logo_path = finders.find('img/crtv.png')
+            if logo_path:
+                logo = Image(logo_path, width=2*inch, height=1*inch)
+                story.append(logo)
+            else:
+                print("Logo file not found")
+
+            # Styles
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            normal_style = styles['Normal']
+
+            # Titre du document
+            title = Paragraph(f"Rapport de Maintenance de l'Extincteur {extincteur.code}", title_style)
+            story.append(title)
+
+            # Informations de l'inspection
+            content = [
+                ['Date de maintenance', str(maintenance.date)],
+                ['Lieu', maintenance.lieu],
+                ['Fiche contrôle vérifiée', 'Oui' if maintenance.fiche_controle_verifiee else 'Non'],
+                ['Emplacement correct', 'Oui' if maintenance.emplacement_correct else 'Non'],
+                ['Visible et accessible', 'Oui' if maintenance.visible_accessible else 'Non'],
+                ['Plaque lisible', 'Oui' if maintenance.plaque_lisible else 'Non'],
+                ['Signes de détérioration', 'Oui' if maintenance.signes_deterioration else 'Non'],
+                ['Pression normale', 'Oui' if maintenance.pression_normale else 'Non'],
+                ['Mode d\'emploi affiché', 'Oui' if maintenance.mode_emploi_affiche else 'Non'],
+                ['Exposé à un dommage', 'Oui' if maintenance.dommage_expose else 'Non'],
+                ['Observation', maintenance.observation],
+                ['Prochaine maintenance', str(maintenance.prochaine_maintenance) if maintenance.prochaine_maintenance else 'Non défini'],
+            ]
+
+            table = Table(content)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), '#d5d5d5'),
+                ('GRID', (0, 0), (-1, -1), 1, '#000000'),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONT', (0, 1), (-1, -1), 'Helvetica'),
+            ]))
+            story.append(table)
+
+            # Génération du PDF
+            doc.build(story)
+            buffer.seek(0)
+
+            # Enregistrement du PDF
+            rapport = RapportInspection()
+            rapport.inspection = maintenance
+            rapport.date = maintenance.date
+            rapport.pdf.save(f"{extincteur.code}_{maintenance.date}.pdf", buffer, save=False)
+            rapport.save()
+
+            return redirect(reverse('details_extincteurs', args=[extincteur.code]))
+
+    else:
+        form = InspectionForm()
+
+    return render(request, 'details_extincteurs.html', {'form': form, 'extincteur': extincteur, 'utilisateur': utilisateur})
+
+
+
+
 
 
 

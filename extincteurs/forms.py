@@ -1,6 +1,10 @@
 from django import forms
 from .models import Utilisateur, Extincteur
-
+from django import forms
+from django.contrib.auth.models import User
+from .models import Utilisateur
+from django import forms
+from .models import Inspection
 
 class CustomLoginForm(forms.Form):
     identifier = forms.CharField(
@@ -49,11 +53,6 @@ class SignUpForm(forms.ModelForm):
             user.save()
         return user
 
-
-
-from django import forms
-from .models import Inspection
-
 class InspectionForm(forms.ModelForm):
     class Meta:
         model = Inspection
@@ -67,11 +66,18 @@ class InspectionForm(forms.ModelForm):
             'observation': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
-
-
-from django import forms
-from django.contrib.auth.models import User
-from .models import Utilisateur
+class MaintenanceForm(forms.ModelForm):
+    class Meta:
+        model = Inspection
+        fields = [
+            'lieu', 'fiche_controle_verifiee', 'emplacement_correct', 
+            'visible_accessible', 'plaque_lisible', 'signes_deterioration',
+            'pression_normale', 'mode_emploi_affiche', 'dommage_expose', 'observation'
+        ]
+        widgets = {
+            'lieu': forms.TextInput(attrs={'class': 'form-control'}),
+            'observation': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 class UtilisateurForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, help_text="Required.")
