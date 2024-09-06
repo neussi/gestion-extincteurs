@@ -57,7 +57,7 @@
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="nav-item">
-                                    <a href="{% url 'logout' %}" class="tickets_btn">Logout</a>
+                                    <a href="{% url 'logout' %}" class="tickets_btn">se deconnecter</a>
                                 </li>
                             </ul>
                         </div> 
@@ -76,8 +76,8 @@
                             <div class="banner_content">
                                 <h2>Bienvenue, <span> {{ request.user.utilisateur.prenom }}  {{ request.user.utilisateur.nom }} </span> <strong style="color: red;">!</strong> <br>Votre Solution Orientée</h2>
                                 <p>Nous sommes ravis de vous accueillir. Découvrez comment notre solution peut transformer la gestion des extincteurs, fournir des analyses détaillées et optimiser la gestion des utilisateurs. Commencez dès aujourd'hui et améliorez votre expérience.</p>
-                                <a class="banner_btn" href="#">Commencer</a>
-                                <a class="banner_btn2" href="#">Télécharger</a>
+                                <a class="banner_btn" href="#ma-section" onclick="window.location.href='#ma-section'">Commencer</a>
+                                <a class="banner_btn2" href="{% url 'support' %}">Support ?</a>
                             </div>
                         </div>
                         <div class="col-lg-7" style="background-color: #2b2e38;">
@@ -92,7 +92,7 @@
         <!--================End Home Banner Area =================-->
         
     
-        <section class="made_life_area p_120">
+        <section class="made_life_area p_120" id="ma-section">
             <div class="container">
                 <div class="main_title">
                     <h2>Comment Cela Fonctionne Pour Vous</h2>
@@ -102,11 +102,7 @@
                     <!-- Inspections (disponible pour expert et personnel) -->
                     <div class="col-lg-4">
                         <div class="work_item">
-                            <i class="fas fa-fire-extinguisher">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
-									<path d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0m1.602-2.027c.04-.534.198-.815.846-1.26.674-.475 1.05-1.09 1.05-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745.336 0 .504-.24.554-.627"/>
-								</svg>
-							</i>
+                            <img class="img-fluid" src="{% static 'img/3.png' %}" width="100px" height="100px" alt="Image de bienvenue">                
                             <a href="{% url 'types_extincteurs' %}"><h4>Inspections</h4></a>
                         </div>
                     </div>
@@ -115,9 +111,7 @@
                     {% if utilisateur.type_utilisateur == 'personnel' %}
                     <div class="col-lg-4">
                         <div class="work_item">
-                            <i class="lnr lnr-chart-bars">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reception-4" viewBox="0 0 16 16"><path d="M0 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5zm4-3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5z"/></svg>
-							</i>
+                            <img class="img-fluid" src="{% static 'img/4.png' %}" width="100px" height="100px" alt="Image de bienvenue">                
                             <a href="{% url 'stats' %}"><h4>Statistiques</h4></a>
                         </div>
                     </div>
@@ -127,9 +121,7 @@
                     {% if utilisateur.type_utilisateur == 'personnel' %}
                     <div class="col-lg-4">
                         <div class="work_item">
-                            <i class="bi bi-people-fill">
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>
-							</i>                           
+                            <img class="img-fluid" src="{% static 'img/1.png' %}" width="100px" height="100px" alt="Image de bienvenue">                
                             <a href="{% url 'gestion_utilisateurs' %}"><h4>Utilisateurs</h4></a>
                         </div>
                     </div>
@@ -138,11 +130,7 @@
                     <!-- Extincteurs (disponible pour expert et personnel) -->
                     <div class="col-lg-4">
                         <div class="work_item">
-                            <i class="bi bi-people-fill">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                                    <path d="..."></path>
-                                </svg>
-                            </i>                            
+                            <img class="img-fluid" src="{% static 'img/5.png' %}" width="100px" height="100px" alt="Image de bienvenue">                
                             <a href="{% url 'gestion_extincteurs' %}"><h4>Extincteurs</h4></a>
                         </div>
                     </div>
@@ -150,11 +138,7 @@
                     <!-- Rapports (disponible pour expert et personnel) -->
                     <div class="col-lg-4">
                         <div class="work_item">
-                            <i class="bi bi-people-fill">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                                    <path d="..."></path>
-                                </svg>
-                            </i>                            
+                            <img class="img-fluid" src="{% static 'img/2.png' %}" width="100px" height="100px" alt="Image de bienvenue">                                
                             <a href="{% url 'gestion_rapports' %}"><h4>Rapports</h4></a>
                         </div>
                     </div>

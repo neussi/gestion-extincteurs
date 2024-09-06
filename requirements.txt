@@ -7,3 +7,5 @@ python-decouple==3.8
 psycopg2==2.9.9
 reportlab
 qrcode[pil]
+
+

@@ -26,6 +26,13 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, 
 from io import BytesIO
 import qrcode
 from django.contrib.staticfiles import finders
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.colors import red
+from django.core.mail import send_mail
+from django.utils.timezone import now
+from datetime import timedelta
 
 
 def custom_login_view(request):
@@ -238,7 +245,6 @@ def inspecter_extincteur(request, code):
             # Vérification du type d'inspection
             utilisateur = inspection.inspecteur
             if inspection.type_inspection == 'annuelle' and utilisateur.type_utilisateur != 'expert':
-                # Ajouter un message d'erreur et rediriger
                 messages.error(request, "Seuls les utilisateurs de type expert peuvent réaliser des inspections annuelles.")
                 return redirect(request.META.get('HTTP_REFERER', 'details_extincteur.html'))
 
@@ -259,27 +265,33 @@ def inspecter_extincteur(request, code):
             doc = SimpleDocTemplate(buffer, pagesize=letter)
             story = []
 
-            # En-tête avec le logo
-            logo_path = finders.find('img/crtv.png')
+            # En-tête avec le logo, la date et le titre
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            normal_style = styles['Normal']
+            logo_path = finders.find('img/crtv.png')  # Remplacez par le chemin correct pour le logo
+
             if logo_path:
                 logo = Image(logo_path, width=2*inch, height=1*inch)
                 story.append(logo)
             else:
                 print("Logo file not found")
-
-            # Styles
-            styles = getSampleStyleSheet()
-            title_style = styles['Title']
-            normal_style = styles['Normal']
-
-            # Titre du document
+            
+            # Date et titre du document
             title = Paragraph(f"Rapport d'Inspection de l'Extincteur {extincteur.code}", title_style)
+            date = Paragraph(f"Date de l'inspection: {inspection.date.strftime('%d/%m/%Y')}", title_style)
             story.append(title)
-            username = Paragraph(f"fait par {utilisateur.prenom } {utilisateur.nom } ", normal_style)
-            dates = Paragraph(f"le {inspection.date }", normal_style)
+            story.append(date)
 
+            # Ajout d'une image d'extincteur
+            img_extincteur_path = finders.find('img/e2.png')  # Image de l'extincteur (remplacer le chemin)
+            if img_extincteur_path:
+                img_extincteur = Image(img_extincteur_path, width=2*inch, height=2*inch)
+                story.append(img_extincteur)
+            
+            story.append(Paragraph("<br/>", normal_style))  # Ajout d'un espace
 
-            # Informations de l'inspection
+            # Informations de l'inspection sous forme de tableau
             content = [
                 ['Date de l\'inspection', str(inspection.date)],
                 ['Lieu', inspection.lieu],
@@ -291,7 +303,6 @@ def inspecter_extincteur(request, code):
                 ['Pression normale', 'Oui' if inspection.pression_normale else 'Non'],
                 ['Mode d\'emploi affiché', 'Oui' if inspection.mode_emploi_affiche else 'Non'],
                 ['Exposé à un dommage', 'Oui' if inspection.dommage_expose else 'Non'],
-                ['Observation', inspection.observation],
                 ['Prochaine inspection', str(inspection.prochaine_inspection) if inspection.prochaine_inspection else 'Non défini'],
             ]
 
@@ -305,10 +316,50 @@ def inspecter_extincteur(request, code):
                 ('FONT', (0, 1), (-1, -1), 'Helvetica'),
             ]))
             story.append(table)
+
+           # Styles
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            normal_style = styles['Normal']
+
+            # Définir un style personnalisé pour le titre
+            red_title_style = ParagraphStyle(
+                name='RedTitle',
+                fontSize=14,
+                textColor=red,
+                parent=title_style
+            )
+
+            # Ajouter la section Observation
+            observation_title = Paragraph("<br/>Observation", red_title_style)
+            story.append(observation_title)
+
+            story.append(Paragraph("<br/>", normal_style))
+
+            # Table pour l'observation
+            observation_table = Table([[inspection.observation]], colWidths=[7 * inch])  # Ajustez la largeur de la colonne si nécessaire
+            observation_table.setStyle(TableStyle([
+                ('GRID', (0, 0), (-1, -1), 1, '#F11111'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('FONT', (0, 0), (-1, -1), 'Helvetica'),
+                ('BACKGROUND', (0, 0), (-1, -1), '#FFFFFF'),  # Fond blanc pour le contraste
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),  # Alignement du texte à gauche
+                ('BOX', (0, 0), (-1, -1), 1, '#0F0E0E'),  # Bordure du tableau
+                ('ROUND', (0, 0), (-1, -1), 10),  # Bordures arrondies de 10 unités
+            ]))
+
+            # Ajuster la largeur des colonnes à leur contenu
+            observation_table._argH[0] = None  # Hauteur automatique des lignes
             
-            story.append(username)
+            observation_table._argW[0] = observation_table.wrap(0, 0)[0]
+
+            story.append(observation_table)
             
-            story.append(dates)
+            story.append(Paragraph("<br/><br/>", normal_style))
+            # Footer avec nom et poste de l'inspecteur
+            story.append(Paragraph("<br/>", normal_style))  # Ajout d'un espace
+            footer = Paragraph(f"Inspecteur: {utilisateur.prenom} {utilisateur.nom}, Poste: {utilisateur.poste}", title_style)
+            story.append(footer)
 
             # Génération du PDF
             doc.build(story)
@@ -318,8 +369,17 @@ def inspecter_extincteur(request, code):
             rapport = RapportInspection()
             rapport.inspection = inspection
             rapport.date = inspection.date
-            rapport.pdf.save(f"{extincteur.code}_{inspection.date}.pdf", buffer, save=False)
+            rapport.pdf.save(f"{extincteur.code}_{inspection.date.strftime('%Y-%m-%d')}.pdf", buffer, save=False)
             rapport.save()
+            
+            
+            send_mail(
+                subject="Prochaine maintenance d'extincteur",
+                message=f"Bonjour {utilisateur.prenom},\n\nVotre prochaine maintenance pour l'extincteur {extincteur.code} est prévue pour le {inspection.prochaine_inspection.strftime('%d/%m/%Y')}.",
+                from_email='propentatech@gmail.com',
+                recipient_list=[utilisateur.email],
+                fail_silently=False,
+            )
 
             return redirect(reverse('details_extincteurs', args=[extincteur.code]))
 
@@ -327,8 +387,6 @@ def inspecter_extincteur(request, code):
         form = InspectionForm()
 
     return render(request, 'details_extincteurs.html', {'form': form, 'extincteur': extincteur, 'utilisateur': utilisateur})
-
-
 
 
 
@@ -359,37 +417,51 @@ def maintenance_extincteur(request, code):
             doc = SimpleDocTemplate(buffer, pagesize=letter)
             story = []
 
-            # En-tête avec le logo
-            logo_path = finders.find('img/crtv.png')
-            if logo_path:
-                logo = Image(logo_path, width=2*inch, height=1*inch)
-                story.append(logo)
-            else:
-                print("Logo file not found")
-
             # Styles
             styles = getSampleStyleSheet()
             title_style = styles['Title']
             normal_style = styles['Normal']
 
-            # Titre du document
-            title = Paragraph(f"Rapport de Maintenance de l'Extincteur {extincteur.code}", title_style)
+            # En-tête avec le logo, la date et le titre
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            normal_style = styles['Normal']
+            logo_path = finders.find('img/crtv.png')  # Remplacez par le chemin correct pour le logo
+
+            if logo_path:
+                logo = Image(logo_path, width=2*inch, height=1*inch)
+                story.append(logo)
+            else:
+                print("Logo file not found")
+            
+            # Date et titre du document
+            title = Paragraph(f"Rapport de maintenance de l'Extincteur {extincteur.code}", title_style)
+            date = Paragraph(f"Date de maintenance: {maintenance.date.strftime('%d/%m/%Y')}", title_style)
             story.append(title)
+            story.append(date)
+
+            # Ajout d'une image d'extincteur
+            img_extincteur_path = finders.find('img/e2.png')  # Image de l'extincteur (remplacer le chemin)
+            if img_extincteur_path:
+                img_extincteur = Image(img_extincteur_path, width=2*inch, height=2*inch)
+                story.append(img_extincteur)
+            
+            story.append(Paragraph("<br/>", normal_style))  # Ajout d'un espace
 
             # Informations de l'inspection
             content = [
-                ['Date de maintenance', str(maintenance.date)],
+                ['Date de maintenance', str(maintenance.date.strftime('%Y-%m-%d'))],
                 ['Lieu', maintenance.lieu],
-                ['Fiche contrôle vérifiée', 'Oui' if maintenance.fiche_controle_verifiee else 'Non'],
-                ['Emplacement correct', 'Oui' if maintenance.emplacement_correct else 'Non'],
-                ['Visible et accessible', 'Oui' if maintenance.visible_accessible else 'Non'],
-                ['Plaque lisible', 'Oui' if maintenance.plaque_lisible else 'Non'],
-                ['Signes de détérioration', 'Oui' if maintenance.signes_deterioration else 'Non'],
-                ['Pression normale', 'Oui' if maintenance.pression_normale else 'Non'],
-                ['Mode d\'emploi affiché', 'Oui' if maintenance.mode_emploi_affiche else 'Non'],
-                ['Exposé à un dommage', 'Oui' if maintenance.dommage_expose else 'Non'],
+                ['Un contrôle visuel de l’état des extincteurs, à l’intérieur et à l’extérieur ?', 'Oui' if maintenance.fiche_controle_verifiee else 'Non'],
+                ['Emplacement changé ?', 'Oui' if maintenance.emplacement_correct else 'Non'],
+                ['Visible et accessible ?', 'Oui' if maintenance.visible_accessible else 'Non'],
+                ['Un contrôle du système de sécurité et des éléments qui composent l’extincteur (tubes, lance, percuteur…) ?', 'Oui' if maintenance.plaque_lisible else 'Non'],
+                ['Une vérification du niveau de l’eau ou de la poudre ?', 'Oui' if maintenance.signes_deterioration else 'Non'],
+                ['Un graissage et l’entretien des pièces mobiles de l’extincteur ?', 'Oui' if maintenance.pression_normale else 'Non'],
+                ['Un test de bon fonctionnement de la gâchette ?', 'Oui' if maintenance.mode_emploi_affiche else 'Non'],
+                ['Un remplacement des joints d’étanchéité ?', 'Oui' if maintenance.dommage_expose else 'Non'],
                 ['Observation', maintenance.observation],
-                ['Prochaine maintenance', str(maintenance.prochaine_maintenance) if maintenance.prochaine_maintenance else 'Non défini'],
+                ['Prochaine maintenance', str(maintenance.prochaine_maintenance.strftime('%Y-%m-%d')) if maintenance.prochaine_maintenance else 'Non défini'],
             ]
 
             table = Table(content)
@@ -402,7 +474,51 @@ def maintenance_extincteur(request, code):
                 ('FONT', (0, 1), (-1, -1), 'Helvetica'),
             ]))
             story.append(table)
+            
+            # Styles
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            normal_style = styles['Normal']
 
+            # Définir un style personnalisé pour le titre
+            red_title_style = ParagraphStyle(
+                name='RedTitle',
+                fontSize=14,
+                textColor=red,
+                parent=title_style
+            )
+
+            # Ajouter la section Observation
+            observation_title = Paragraph("<br/>Observation de maintenance", red_title_style)
+            story.append(observation_title)
+
+            story.append(Paragraph("<br/>", normal_style))
+
+            # Table pour l'observation
+            observation_table = Table([[maintenance.observation]], colWidths=[7 * inch])  # Ajustez la largeur de la colonne si nécessaire
+            observation_table.setStyle(TableStyle([
+                ('GRID', (0, 0), (-1, -1), 1, '#111010'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('FONT', (0, 0), (-1, -1), 'Helvetica'),
+                ('BACKGROUND', (0, 0), (-1, -1), '#FFFFFF'),  # Fond blanc pour le contraste
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),  # Alignement du texte à gauche
+                ('BOX', (0, 0), (-1, -1), 1, '#0F0E0E'),  # Bordure du tableau
+                ('ROUND', (0, 0), (-1, -1), 10),  # Bordures arrondies de 10 unités
+            ]))
+
+            # Ajuster la largeur des colonnes à leur contenu
+            observation_table._argH[0] = None  # Hauteur automatique des lignes
+            
+            observation_table._argW[0] = observation_table.wrap(0, 0)[0]
+
+            story.append(observation_table)
+
+            story.append(Paragraph("<br/><br/>", normal_style))
+            # Footer avec nom et poste de l'inspecteur
+            story.append(Paragraph("<br/>", normal_style))  # Ajout d'un espace
+            footer = Paragraph(f"Maintenancier: {utilisateur.prenom} {utilisateur.nom}", title_style)
+            story.append(footer)
+            
             # Génération du PDF
             doc.build(story)
             buffer.seek(0)
@@ -413,6 +529,16 @@ def maintenance_extincteur(request, code):
             rapport.date = maintenance.date
             rapport.pdf.save(f"{extincteur.code}_{maintenance.date}.pdf", buffer, save=False)
             rapport.save()
+            
+            
+            
+            send_mail(
+                subject="Prochaine maintenance d'extincteur",
+                message=f"Bonjour {utilisateur.prenom},\n\nVotre prochaine maintenance pour l'extincteur {extincteur.code} est prévue pour le {maintenance.prochaine_maintenance.strftime('%d/%m/%Y')}.",
+                from_email='propentatech@gmail.com',
+                recipient_list=[utilisateur.email],
+                fail_silently=False,
+            )
 
             return redirect(reverse('details_extincteurs', args=[extincteur.code]))
 
