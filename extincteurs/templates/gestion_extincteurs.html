@@ -1,0 +1,241 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image logo">
+        <title>EXTINCTEURS | Gestion</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    </head>
+    <body>
+        
+        <header class="header_area">
+            <div class="main_menu">
+                <nav class="navbar navbar-expand-lg navbar-light" style="background-color: black;">
+                    <div class="container box_1620">
+                        <a class="navbar-brand logo_h" href="{% url 'home' %}"><img src="{% static 'img/crtv.png' %}" width="50px" height="50px" alt=""></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                            <ul class="nav navbar-nav menu_nav justify-content-center">
+                                <li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'gestion_extincteurs' %}">Extincteurs</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item"><a href="#" class="tickets_btn">Logout</a></li>
+                            </ul>
+                        </div> 
+                    </div>
+                </nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+        
+        <section class="made_life_area p_120">
+            <div class="container">
+                <h2 class="mb-4">Liste des extincteurs</h2>
+                <button class="btn btn-primary float-right mb-3" data-toggle="modal" data-target="#addExtincteurModal">+ AJOUTER</button>
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Code</th>
+                            <th>Type</th>
+                            <th>Classe</th>
+                            <th>Date d'achat</th>
+                            <th>Date d'expiration</th>
+                            <th>Localisation</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for extincteur in extincteurs %}
+                        <tr>
+                            <td>{{ extincteur.code }}</td>
+                            <td>{{ extincteur.type_extincteur }}</td>
+                            <td>{{ extincteur.classe }}</td>
+                            <td>{{ extincteur.date_achat }}</td>
+                            <td>{{ extincteur.date_valid }}</td>
+                            <td>{{ extincteur.localisation }}</td>
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#editExtincteurModal-{{ extincteur.code }}">✏️</button>
+                                <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteExtincteurModal-{{ extincteur.code }}">🗑️</button>
+                            </td>
+                        </tr>
+        
+                        <!-- Edit Extincteur Modal -->
+                        <div class="modal fade" id="editExtincteurModal-{{ extincteur.code }}" tabindex="-1" role="dialog" aria-labelledby="editExtincteurModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editExtincteurModalLabel">Modifier Extincteur</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form method="POST" action="{% url 'edit_extincteur' extincteur.code %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="code">Code</label>
+                                                <input type="text" class="form-control" id="code" name="code" value="{{ extincteur.code }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="type_extincteur">Type Extincteur</label>
+                                                <input type="text" class="form-control" id="type_extincteur" name="type_extincteur" value="{{ extincteur.type_extincteur }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="classe">Classe</label>
+                                                <input type="text" class="form-control" id="classe" name="classe" value="{{ extincteur.classe }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="date_achat">Date d'achat</label>
+                                                <input type="date" class="form-control" id="date_achat" name="date_achat" value="{{ extincteur.date_achat }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="date_valid">Date d'expiration</label>
+                                                <input type="date" class="form-control" id="date_valid" name="date_valid" value="{{ extincteur.date_valid }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="localisation">Localisation</label>
+                                                <input type="text" class="form-control" id="localisation" name="localisation" value="{{ extincteur.localisation }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Delete Extincteur Modal -->
+                        <div class="modal fade" id="deleteExtincteurModal-{{ extincteur.code }}" tabindex="-1" role="dialog" aria-labelledby="deleteExtincteurModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteExtincteurModalLabel">Supprimer Extincteur</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Voulez-vous vraiment supprimer cet extincteur ?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+                                        <form method="POST" action="{% url 'delete_extincteur' extincteur.code %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Oui</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pagination d-flex justify-content-between align-items-center">
+                    <span>Affichage de 1 à 10 sur {{ extincteurs|length }} entrées</span>
+                    <div class="pagination-controls">
+                        <button class="btn btn-primary">Précédent</button>
+                        <button class="btn btn-primary">1</button>
+                        <button class="btn btn-primary">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Add Extincteur Modal -->
+        
+        <div class="modal fade" id="addExtincteurModal" tabindex="-1" role="dialog" aria-labelledby="addExtincteurModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addExtincteurModalLabel">Ajouter Extincteur</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="{% url 'add_extincteur' %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="code">Code</label>
+                                <input type="text" class="form-control" id="code" name="code" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="type_extincteur">Type Extincteur</label>
+                                <input type="text" class="form-control" id="type_extincteur" name="type_extincteur" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="classe">Classe</label>
+                                <input type="text" class="form-control" id="classe" name="classe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="date_achat">Date d'achat</label>
+                                <input type="date" class="form-control" id="date_achat" name="date_achat" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="date_valid">Date d'expiration</label>
+                                <input type="date" class="form-control" id="date_valid" name="date_valid" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="localisation">Localisation</label>
+                                <input type="text" class="form-control" id="localisation" name="localisation" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--================Footer Area =================-->
+        <footer class="footer_area p_120">
+        	<div class="container">
+        		<div class="row footer_inner">
+        			<div class="col-lg-5 col-sm-6">
+        				<aside class="f_widget ab_widget">
+        					<p> Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved by <a href="https://colorlib.com" target="_blank">Anne Piedjou</a> </p>
+							<a href="index.html"><img src="{%  static 'img/crtv.png' %}" width="80px" height="80px" alt=""></a>
+        				</aside>
+        			</div>
+        		</div>
+        	</div>
+        </footer>
+
+
+
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/stellar.js' %}"></script>
+        <script src="{% static 'vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/imagesloaded.pkgd.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/isotope-min.js' %}"></script>
+        <script src="{% static 'vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.waypoints.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.counterup.min.js' %}"></script>
+        <script src="{% static 'js/mail-script.js' %}"></script>
+
+    </body>
+</html>
+

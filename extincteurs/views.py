@@ -14,10 +14,32 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.views.decorators.csrf import csrf_exempt
 import json
+import os
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Extincteur
+from .forms import ExtincteurForm
+import zipfile
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.utils.text import slugify
+from .models import RapportInspection, Inspection
+from datetime import datetime
 from .forms import SignUpForm
 from django.contrib.auth.models import User
 import qrcode
 from io import BytesIO
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Utilisateur
+from .forms import UtilisateurForm
+from django.shortcuts import render
+from django.db.models import Count
+from .models import Utilisateur, Extincteur, Inspection, Maintenance, RapportInspection
+from django.utils.timezone import now
+from datetime import timedelta
+from django.db.models.functions import ExtractMonth
 
 
 
@@ -331,12 +353,7 @@ def inspecter_extincteur(request, code):
 
     return render(request, 'details_extincteur.html', {'form': form, 'extincteur': extincteur})
 
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Utilisateur
-from .forms import UtilisateurForm
+
 
 def gestion_utilisateurs(request):
     utilisateurs = Utilisateur.objects.all()
@@ -399,7 +416,7 @@ def edit_utilisateur(request, utilisateur_id):
     else:
         form = UtilisateurForm(instance=utilisateur)
 
-    utilisateurs = Utilisateur.objects.all()  # Charger les utilisateurs pour les afficher
+    utilisateurs = Utilisateur.objects.all()  
     return render(request, 'gestion_utilisateurs.html', {'form': form, 'utilisateurs': utilisateurs})
 
 
@@ -409,3 +426,125 @@ def delete_utilisateur(request, utilisateur_id):
     utilisateur.delete()
     messages.success(request, 'Utilisateur supprimé avec succès.')
     return redirect('gestion_utilisateurs')
+
+
+
+def gestion_extincteurs(request):
+    extincteurs = Extincteur.objects.all()
+    return render(request, 'gestion_extincteurs.html', {'extincteurs': extincteurs})
+
+def add_extincteur(request):
+    if request.method == 'POST':
+        form = ExtincteurForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('gestion_extincteurs')
+    else:
+        form = ExtincteurForm()
+        
+    extincteurs = Extincteur.objects.all()  
+       
+    return render(request, 'gestion_extincteurs.html', {'form': form, 'extincteurs':extincteurs})
+
+def edit_extincteur(request, extincteur_id):
+    extincteur = get_object_or_404(Extincteur, code=extincteur_id)
+    if request.method == 'POST':
+        form = ExtincteurForm(request.POST, instance=extincteur)
+        if form.is_valid():
+            form.save()
+            return redirect('gestion_extincteurs')
+    else:
+        form = ExtincteurForm(instance=extincteur)
+    return render(request, 'edit_extincteur.html', {'form': form, 'extincteur': extincteur})
+
+def delete_extincteur(request, extincteur_id):
+    extincteur = get_object_or_404(Extincteur, code=extincteur_id)
+    if request.method == 'POST':
+        extincteur.delete()
+        return redirect('gestion_extincteurs')
+    return render(request, 'gestion_extincteurs.html', {'extincteur': extincteur})
+
+
+
+
+def gestion_rapports(request):
+    rapports = RapportInspection.objects.all()
+    inspection_dates = Inspection.objects.values_list('date', flat=True).distinct()
+    context = {
+        'inspection_dates': inspection_dates,
+        'rapports': rapports,
+    }
+    return render(request, 'rapports.html', context)
+
+
+
+
+
+
+def stats_view(request):
+    # Nombre total d'inspections
+    total_inspections = Inspection.objects.count() 
+    
+    total_extincteurs = Extincteur.objects.count() 
+
+    # Nombre total d'utilisateurs
+    total_utilisateurs = Utilisateur.objects.count()
+
+    # Dernière date d'inspection
+    derniere_inspection = Inspection.objects.latest('date').date if total_inspections > 0 else "Aucune inspection"
+
+    # Nombre total de rapports d'inspection
+    total_rapports = RapportInspection.objects.count()
+
+    # Statistiques d'inspection par mois
+    inspections_par_mois = Inspection.objects.filter(date__year=now().year).annotate(month=ExtractMonth('date')).values('month').annotate(count=Count('id')).order_by('month')
+
+    # Statistiques d'inspection par type
+    inspections_par_type = Inspection.objects.values('type_inspection').annotate(count=Count('id'))
+
+    context = {
+        'total_inspections': total_inspections,
+        'total_utilisateurs': total_utilisateurs,
+        'derniere_inspection': derniere_inspection,
+        'total_extincteurs': total_extincteurs,
+        'total_rapports': total_rapports,
+        'inspections_par_mois': inspections_par_mois,
+        'inspections_par_type': inspections_par_type,
+    }
+
+    return render(request, 'stats.html', context)
+
+
+
+
+def download_reports_view(request):
+    if request.method == 'POST':
+        selected_date = request.POST.get('inspection_date')
+        
+        if selected_date:
+            try:
+                # Adapter le format ici pour correspondre au format attendu
+                selected_date = datetime.strptime(selected_date, "%b. %d, %Y").date()
+            except ValueError:
+                return HttpResponse("Format de date incorrect.", status=400)
+            
+            rapports = RapportInspection.objects.filter(inspection__date=selected_date)
+            
+            if rapports.exists():
+                # Création du fichier zip
+                zip_filename = f"rapports_{selected_date}.zip"
+                zip_filepath = os.path.join('media', zip_filename)
+
+                with zipfile.ZipFile(zip_filepath, 'w') as zip_file:
+                    for rapport in rapports:
+                        # Ajout des fichiers PDF au zip
+                        zip_file.write(rapport.pdf.path, os.path.basename(rapport.pdf.path))
+                
+                # Retourner le fichier zip à l'utilisateur
+                with open(zip_filepath, 'rb') as file:
+                    response = HttpResponse(file.read(), content_type='application/zip')
+                    response['Content-Disposition'] = f'attachment; filename="{zip_filename}"'
+                    return response
+
+    # Si la date n'est pas sélectionnée ou aucun rapport n'existe
+    return HttpResponse("Aucun rapport trouvé pour la date sélectionnée.", status=404)

@@ -1,0 +1,149 @@
+
+
+
+
+
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="{% static 'img/favicon.png' %}" type="image logo">
+        <title>EXTINCTEURS | rapports</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    </head>
+    <body>
+        
+        <header class="header_area">
+            <div class="main_menu">
+                <nav class="navbar navbar-expand-lg navbar-light" style="background-color: black;">
+                    <div class="container box_1620">
+                        <a class="navbar-brand logo_h" href="{% url 'home' %}"><img src="{% static 'img/crtv.png' %}" width="50px" height="50px" alt=""></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                            <ul class="nav navbar-nav menu_nav justify-content-center">
+                                <li class="nav-item active"><a class="nav-link" href="{% url 'home' %}">Home</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'gestion_extincteurs' %}">Extincteurs</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item"><a href="#" class="tickets_btn">Logout</a></li>
+                            </ul>
+                        </div> 
+                    </div>
+                </nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+        
+        <section class="made_life_area p_120">
+            <div class="container">
+                <h2 class="mb-4">Liste des rapports</h2>
+                <button class="btn btn-primary float-right mb-3" data-toggle="modal" data-target="#downloadReportsModal">Télécharger des Rapports</button>
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Inspection</th>
+                            <th>PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rapport in rapports %}
+                        <tr>
+                            <td>{{ rapport.id }}</td>
+                            <td>{{ rapport.date }}</td>
+                            <td>{{ rapport.inspection }}</td>
+                            <td><a href="{{ rapport.pdf.url }}" target="_blank">Voir</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pagination d-flex justify-content-between align-items-center">
+                    <span>Affichage de 1 à 10 sur {{ rapports|length }} entrées</span>
+                    <div class="pagination-controls">
+                        <button class="btn btn-primary">Précédent</button>
+                        <button class="btn btn-primary">1</button>
+                        <button class="btn btn-primary">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Modal pour télécharger les rapports -->
+        <div class="modal fade" id="downloadReportsModal" tabindex="-1" role="dialog" aria-labelledby="downloadReportsModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="downloadReportsModalLabel">Télécharger les Rapports</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="downloadReportsForm" method="POST" action="{% url 'download_reports' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="inspectionDate">Sélectionnez une date d'inspection :</label>
+                                <select class="form-control" id="inspectionDate" name="inspection_date">
+                                    {% for date in inspection_dates %}
+                                    <option value="{{ date }}">{{ date }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" form="downloadReportsForm" class="btn btn-primary">Télécharger</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+
+        <!--================Footer Area =================-->
+        <footer class="footer_area p_120">
+        	<div class="container">
+        		<div class="row footer_inner">
+        			<div class="col-lg-5 col-sm-6">
+        				<aside class="f_widget ab_widget">
+        					<p> Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved by <a href="https://colorlib.com" target="_blank">Anne Piedjou</a> </p>
+							<a href="index.html"><img src="{%  static 'img/crtv.png' %}" width="80px" height="80px" alt=""></a>
+        				</aside>
+        			</div>
+        		</div>
+        	</div>
+        </footer>
+
+
+
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'js/popper.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/stellar.js' %}"></script>
+        <script src="{% static 'vendors/lightbox/simpleLightbox.min.js' %}"></script>
+        <script src="{% static 'vendors/nice-select/js/jquery.nice-select.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/imagesloaded.pkgd.min.js' %}"></script>
+        <script src="{% static 'vendors/isotope/isotope-min.js' %}"></script>
+        <script src="{% static 'vendors/owl-carousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'js/jquery.ajaxchimp.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.waypoints.min.js' %}"></script>
+        <script src="{% static 'vendors/counter-up/jquery.counterup.min.js' %}"></script>
+        <script src="{% static 'js/mail-script.js' %}"></script>
+
+    </body>
+</html>

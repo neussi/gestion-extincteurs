@@ -25,5 +25,18 @@ urlpatterns = [
     path('add_utilisateur/', add_utilisateur, name='add_utilisateur'),
     path('edit_utilisateur/<int:utilisateur_id>/', edit_utilisateur, name='edit_utilisateur'),
     path('delete_utilisateur/<int:utilisateur_id>/', delete_utilisateur, name='delete_utilisateur'),
+    
+    
+    
+    path('gestion_extincteurs/', gestion_extincteurs, name='gestion_extincteurs'),
+    path('extincteur/add/', add_extincteur, name='add_extincteur'),
+    path('extincteur/edit/<str:extincteur_id>/', edit_extincteur, name='edit_extincteur'),
+    path('extincteur/delete/<str:extincteur_id>/', delete_extincteur, name='delete_extincteur'),
+    path('gestion_rapports/', gestion_rapports, name='gestion_rapports'), 
+    path('download_reports/', download_reports_view, name='download_reports'),
+
+    
+    path('stats/', stats_view, name='stats'), 
+
 
 ]

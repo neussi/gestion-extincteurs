@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur
+from .models import Utilisateur, Extincteur
 
 
 class CustomLoginForm(forms.Form):
@@ -107,3 +107,17 @@ class UtilisateurForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class ExtincteurForm(forms.ModelForm):
+    class Meta:
+        model = Extincteur
+        fields = ['type_extincteur', 'classe', 'date_achat', 'date_valid', 'localisation']
+        widgets = {
+            'type_extincteur': forms.Select(attrs={'class': 'form-control'}),
+            'classe': forms.Select(attrs={'class': 'form-control'}),
+            'date_achat': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'date_valid': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'localisation': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
